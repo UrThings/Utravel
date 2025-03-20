@@ -64,6 +64,7 @@ function AdminDashboard(setUser) {
             limit: Number(newTravel.limit), // Тоон утга болгох
             img: newTravel.img,
         });
+        alert("Амжилттай нэмэгдлээ.")
 
         getTravels();
         setNewTravel({
@@ -83,6 +84,7 @@ function AdminDashboard(setUser) {
 
 const removeTravel = async (id) => {
     await axios.delete("http://localhost:3000/api/travel/RemoveTravels", { data: { id } });
+    await getTravels();
 }
   
   

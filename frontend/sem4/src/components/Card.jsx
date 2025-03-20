@@ -30,7 +30,7 @@ function Card({ travels, addToCart }) {
     
 
     return (
-        <div className="card-container">
+        <div className="card-container" style={{display:'grid', gridTemplateColumns: "1fr 1fr 1fr"}}>
             {travels.map((travel) => (
                 <div className="card" key={travel.id}>
                     <div className="card-image">
@@ -50,8 +50,8 @@ function Card({ travels, addToCart }) {
                             Дуусах: {new Date(travel.Enddate).toLocaleString("mn-MN", { timeZone: "Asia/Ulaanbaatar" })}
                         </div>
                         <div className="info">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828853.png" alt="Flight" />
-                            {travel.flight ? "Шууд нислэгтэй" : "Шууд нислэггүй"}
+                            Зорчигчийн тоо: {travel.limit}/{travel.countNow}
+                            
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between" }}>
                             <div>

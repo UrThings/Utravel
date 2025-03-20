@@ -28,6 +28,8 @@ function UserDashboard({ user, setUser }) {
     fetchData();
   }, []);
 
+  if(cart)
+
 
 
 
@@ -64,6 +66,7 @@ function UserDashboard({ user, setUser }) {
       const response = await axios.get("http://localhost:3000/api/travel/travels");
       setTravels(response.data.travels);
       setFtravels(response.data.travels)
+      applyFilters(filters);
 
     } catch (error) {
       console.error("Аяллуудыг авахад алдаа гарлаа:", error);
@@ -107,6 +110,7 @@ function UserDashboard({ user, setUser }) {
         price
       });
       getCart();
+      getTravels();
     } catch (error) {
       console.error("Сагсанд нэмэхэд алдаа гарлаа:", error);
     }
@@ -137,6 +141,7 @@ function UserDashboard({ user, setUser }) {
         data: { userId, travelId },
       });
       getCart();
+      getTravels();
     } catch (error) {
       console.error("Сагснаас хасахад алдаа гарлаа:", error);
     }
@@ -286,9 +291,11 @@ const applyFilters = (newFilters) => {
             <h1>Манай аялалууд</h1>
           </center>
         </div>
-        <div style={{display:"flex"}}>
+        <div style={{display:"flex", justifyContent:"space-between"}}>
           <FilterHtml filters={filters} handleFilterChange={handleFilterChange} />
-          <Card travels={fTravels} addToCart={addToCart} />
+          <div>
+            <Card travels={fTravels} addToCart={addToCart} />
+          </div>
         </div>
 
         
