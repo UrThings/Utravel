@@ -3,6 +3,16 @@ import prisma from '../database'
 
 export const removeUsers = async (userId: string) => {
     try {
+        await prisma.bookedTravel.deleteMany({
+            where: {
+                userId
+            }
+        })
+        await prisma.cartTravel.deleteMany({
+            where: {
+                userId
+            }
+        })
         await prisma.user.delete({
             where: {
                 id: userId
