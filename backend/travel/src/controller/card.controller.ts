@@ -6,14 +6,14 @@ import { addToCarts, removeAllFromCarts, removeFromCarts, pays, cartLists, getTr
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
         
-        const { userId, travelId, count , img, name } = req.body;
+        const { userId, travelId, count , img, name, price } = req.body;
 
         // Шаардлагатай бүх утга ирсэн эсэхийг шалгах
         if (!userId || !travelId || !count || !img) {
             return res.status(400).json({ message: "Missing required fields" });
         }
 
-        const cart = await addToCarts(userId, travelId, count, img, name);
+        const cart = await addToCarts(userId, travelId, count, img, name, price);
         res.status(200).json({ message: "Added to cart successfully", cart });
     } catch (error) {
         console.error(error);

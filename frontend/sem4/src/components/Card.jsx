@@ -4,13 +4,14 @@ import "../App.css";
 function Card({ travels, addToCart }) {
     const [counts, setCounts] = useState({});
 
-    const handleAddToCart = async (travelId, travelImg, travelName) => {
+    const handleAddToCart = async (travelId, travelImg, travelName, travelPrice) => {
         const count = counts[travelId] || 1;
         console.log(`Сагсанд нэмэх: ID=${travelId}, Тоо=${count}`);
     
         try {
-            await addToCart(travelId, count, travelImg, travelName);
+            await addToCart(travelId, count, travelImg, travelName, travelPrice);
             console.log(`Амжилттай нэмэгдлээ: ${travelId} (${count})`);
+            alert("Сагсанд нэмэгдлээ")
         } catch (error) {
             console.error("Сагсанд нэмэхэд алдаа гарлаа:", error.response?.data || error.message);
         }
@@ -34,7 +35,7 @@ function Card({ travels, addToCart }) {
                 <div className="card" key={travel.id}>
                     <div className="card-image">
                         <img src={travel.img} alt={travel.name} />
-                        <button style={{border:'none'}} onClick={() => handleAddToCart(travel.id, travel.img, travel.name)} className="heart"></button>
+                        <button style={{border:'none'}} onClick={() => handleAddToCart(travel.id, travel.img, travel.name, travel.price)} className="heart"></button>
                     </div>
                     <div className="card-body">
                         <div className="title">{travel.name}</div>

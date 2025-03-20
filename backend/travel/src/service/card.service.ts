@@ -84,7 +84,7 @@ export const cartLists = async () => {
 }
 
 
-export const addToCarts = async (userId: string, travelId: string, count: number, img: string, name: string ) => {
+export const addToCarts = async (userId: string, travelId: string, count: number, img: string, name: string, price: number ) => {
     const travel = await prisma.travel.findUnique({
         where:{
             id: travelId
@@ -99,7 +99,8 @@ export const addToCarts = async (userId: string, travelId: string, count: number
             travelId,
             count,
             img,
-            name
+            name, 
+            price
         }
     });
     await prisma.travel.update({

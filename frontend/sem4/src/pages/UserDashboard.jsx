@@ -33,8 +33,14 @@ function UserDashboard({ user, setUser }) {
         await getTravelFromBooked(); 
 
         const totalPrice = cart
-          .map((travel) => travel.price || 12 * travel.count)
-          .reduce((a, b) => a + b, 0);
+        .map((travel) => {
+          if (travel.price && travel.count) {
+            return travel.price * travel.count;
+          }
+          return 0; // Хэрвээ price эсвэл count байхгүй бол 0 гаргана
+        })
+        .reduce((a, b) => a + b, 0);
+      
         setTotalPrice(totalPrice);
       } catch (error) {
         console.error("Сагсны өгөгдлийг авахад алдаа гарлаа:", error);
@@ -82,14 +88,15 @@ function UserDashboard({ user, setUser }) {
     }
   };
 
-  const addToCart = async (travelId, count, img, name) => {
+  const addToCart = async (travelId, count, img, name, price) => {
     try {
       await axios.post("http://localhost:3000/api/card/cart", {
         userId,
         travelId,
         count,
         img,
-        name
+        name,
+        price
       });
       getCart();
     } catch (error) {
@@ -233,6 +240,7 @@ function UserDashboard({ user, setUser }) {
                 <img src={travel.img} className="card-img-top" alt={travel.name} />
                 <div className="card-body">
                   <h6 className="card-title" style={{fontSize:'20px'}}>{travel.name}</h6>
+                  <h6>Үнэ: {travel.price*travel.count}₮</h6>
                   <button onClick={() =>addToBooked(travel.img , travel.name, travel.travelId)} className="button">Төлбөр төлөх</button>
                   <button onClick={() => deleteTravelFromCart(travel.travelId)} style={{position:'absolute', zIndex:'99' , bottom:13, right:20, width:'130px', height:'50px', borderRadius:'10px'}} className="btn btn-danger btn-sm">Хасах</button>
                 </div>
