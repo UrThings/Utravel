@@ -3,9 +3,11 @@ import axios from "axios";
 import Card from "../components/Card.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Carousel from "react-bootstrap/Carousel";
+import FilterHtml from "../components/filter.jsx";
 
 function UserDashboard({ user, setUser }) {
   const [travels, setTravels] = useState([]);
+  const [fTravels, setFtravels] = useState(travels)
   const [cart, setCart] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
   const [showOrdered, setShowOrdered] = useState(false); // New state for ordered travels
@@ -18,13 +20,17 @@ function UserDashboard({ user, setUser }) {
       try {
         await getTravels();
         await getCart();
-        await getTravelFromBooked(); // Get booked travels when the component mounts
+        await getTravelFromBooked(); 
       } catch (error) {
         console.error("Алдаа гарлаа:", error);
       }
     };
     fetchData();
   }, []);
+
+
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,6 +48,7 @@ function UserDashboard({ user, setUser }) {
         .reduce((a, b) => a + b, 0);
       
         setTotalPrice(totalPrice);
+
       } catch (error) {
         console.error("Сагсны өгөгдлийг авахад алдаа гарлаа:", error);
       }
@@ -54,15 +61,16 @@ function UserDashboard({ user, setUser }) {
 
   const getTravels = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3000/api/travel/travels"
-      );
+      const response = await axios.get("http://localhost:3000/api/travel/travels");
       setTravels(response.data.travels);
+      setFtravels(response.data.travels)
+
     } catch (error) {
       console.error("Аяллуудыг авахад алдаа гарлаа:", error);
       setTravels([]);
     }
   };
+  
 
   const getCart = async () => {
     try {
@@ -134,14 +142,86 @@ function UserDashboard({ user, setUser }) {
     }
   }
 
+  const [filters, setFilters] = useState({
+    name: "",
+    startDate: "",
+    endDate: "",
+    minPrice: "",
+    maxPrice: ""
+  });
 
 
+  const handleFilterChange = (key, value) => {
+    if(key == "hi"){
+      const refreshedFilter = {
+        name: "",
+        startDate: "",
+        endDate: "",
+        minPrice: "",
+        maxPrice: ""
+      }
+      setFilters({
+        name: "",
+        startDate: "",
+        endDate: "",
+        minPrice: "",
+        maxPrice: ""
+      })
+      applyFilters(refreshedFilter)
+
+      return;
+
+    }
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    applyFilters(newFilters);
+
+};
 
 
+const applyFilters = (newFilters) => {
+  let filteredTravels = travels;
 
+  if (newFilters.name) {
+    filteredTravels = filteredTravels.filter((item) =>
+      item.name && item.name.toLowerCase().includes(newFilters.name.toLowerCase()),
+    
+    );
+  }
+  
+  if (newFilters.startDate) {
+    const filterStartDate = new Date(newFilters.startDate).setHours(0, 0, 0, 0); 
+    filteredTravels = filteredTravels.filter((item) => {
+      const itemStartDate = new Date(item.Startdate).setHours(0, 0, 0, 0);
 
+      return itemStartDate >= filterStartDate;
+    });
+  }
 
+  if (newFilters.endDate) {
+    const filterEndDate = new Date(newFilters.endDate).setHours(23, 59, 59, 999); 
+    filteredTravels = filteredTravels.filter((item) => {
+      const itemEndDate = new Date(item.Enddate).setHours(23, 59, 59, 999);
+      return itemEndDate <= filterEndDate;
+    });
+  }
 
+  if (newFilters.minPrice) {
+    filteredTravels = filteredTravels.filter((item) => 
+      item.price && item.price >= parseFloat(newFilters.minPrice)
+    );
+  }
+
+  if (newFilters.maxPrice) {
+    filteredTravels = filteredTravels.filter((item) => 
+      item.price && item.price <= parseFloat(newFilters.maxPrice)
+    );
+  }
+
+  setFtravels(filteredTravels);
+  console.log(filteredTravels)
+
+};
 
   return (
     <div className="p-6">
@@ -206,8 +286,10 @@ function UserDashboard({ user, setUser }) {
             <h1>Манай аялалууд</h1>
           </center>
         </div>
-
-        <Card travels={travels} addToCart={addToCart} />
+        <div style={{display:"flex"}}>
+          <FilterHtml filters={filters} handleFilterChange={handleFilterChange} />
+          <Card travels={fTravels} addToCart={addToCart} />
+        </div>
 
         
       </div>
