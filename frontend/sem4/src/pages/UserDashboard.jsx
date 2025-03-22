@@ -64,9 +64,8 @@ function UserDashboard({ user, setUser }) {
   const getTravels = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/travel/travels");
-      setTravels(response.data.travels);
-      setFtravels(response.data.travels)
-      applyFilters(filters);
+      await setTravels(response.data.travels);
+      await setFtravels(response.data.travels);
 
     } catch (error) {
       console.error("Аяллуудыг авахад алдаа гарлаа:", error);
@@ -186,6 +185,7 @@ function UserDashboard({ user, setUser }) {
 
 const applyFilters = (newFilters) => {
   let filteredTravels = travels;
+  console.log(filteredTravels)
 
   if (newFilters.name) {
     filteredTravels = filteredTravels.filter((item) =>
