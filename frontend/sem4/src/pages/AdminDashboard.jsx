@@ -18,6 +18,9 @@ function AdminDashboard(setUser) {
     img: "",
   });
   const [activeSection, setActiveSection] = useState("users");
+  const [bookedUser, setBookedUser] = useState([])
+  const [cartUser, setCartUser] = useState()
+
 
   
   const navigate = useNavigate();
@@ -43,6 +46,21 @@ function AdminDashboard(setUser) {
     const response = await axios.get("http://localhost:3000/api/travel/travels");
     setTravels(response.data.travels);
   };
+
+  const getUserFromCart = async (travelId) => {
+    const users = await axios.get("http://localhost:3000/api/user/getUserFromCart/" + travelId);
+    setCartUser(users)
+    console.log(users.data.data)
+
+  }
+
+  
+  const getUserFromBooked = async (travelId) => {
+    const users = await axios.get("http://localhost:3000/api/user/getUserFromBooked/" + travelId);
+    setBookedUser(users)
+    console.log(users.data)
+
+  }
 
 
 
@@ -104,6 +122,19 @@ const makeAdmin = async (userId) => {
   alert("Хэрэглэгчийг админ болголоо.");
 }
 
+const [listShow, setListShow] = useState(false);
+const [selectedTravel, setSelectedTravel] = useState(null);
+const [activeList, setActiveList] = useState("booked"); 
+
+
+
+const showUserList = (travel) => {
+  setSelectedTravel(travel);
+  setListShow(true);
+  getUserFromBooked(travel.id);
+  getUserFromCart(travel.id);
+};
+
 
 
   return (
@@ -164,17 +195,152 @@ const makeAdmin = async (userId) => {
                       <br />
                       Дуусах: {new Date(travel.Enddate).toLocaleString("mn-MN", { timeZone: "Asia/Ulaanbaatar" })}
                   </div>
-                  <p className="text-gray-700 text-sm">👥 Хязгаар: {travel.limit} хүн</p>
+                  <p className="text-gray-700 text-sm">👥 Хязгаар: {travel.limit} / {travel.countNow} хүн</p>
                   <button
                     className="button"
                     onClick={() => removeTravel(travel.id)}
                   >
                     Устгах
                   </button>
+                  <button onClick={()=>showUserList(travel)} className="button" style={{marginLeft:'10px'}}>
+                    Жагсаалт
+                  </button>
 
                 </div>
               ))}
             </div>
+            {listShow && selectedTravel && (
+              <div style={{
+                position: "fixed",
+                zIndex: 1000,
+                left: 0,
+                top: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+                <div style={{
+                  backgroundColor: "white",
+                  padding: "24px",
+                  borderRadius: "8px",
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                  width: "24rem"
+                }}>
+                  <h2 style={{
+                    fontSize: "1.125rem",
+                    fontWeight: "bold",
+                    color: "#2d3748",
+                    textAlign: "center"
+                  }}>{selectedTravel.name} - Хэрэглэгчид</h2>
+
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "16px",
+                    marginTop: "16px"
+                  }}>
+                    <button
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: "8px",
+                        color: "white",
+                        backgroundColor: activeList === "booked" ? "#4c51bf" : "#e2e8f0"
+                      }}
+                      onClick={() => setActiveList("booked")}
+                    >
+                      Захиалсан хэрэглэгчид
+                    </button>
+                    <button
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: "8px",
+                        color: "white",
+                        backgroundColor: activeList === "cart" ? "#4c51bf" : "#e2e8f0"
+                      }}
+                      onClick={() => setActiveList("cart")}
+                    >
+                      Сагсанд хийсэн хэрэглэгчид
+                    </button>
+                  </div>
+
+                  <div style={{ marginTop: "16px" }}>
+                    <ul style={{
+                      display: "block",
+                      padding: "8px",
+                      maxHeight: "15rem",
+                      overflowY: "auto",
+                      gap: "12px"
+                    }}>
+                      {activeList === "booked"
+                        ? bookedUser?.data?.data?.map((user) => (
+                            <li key={user.user.id} style={{
+                              padding: "12px",
+                              backgroundColor: "#f7fafc",
+                              borderRadius: "8px",
+                              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center"
+                            }}>
+                              <span style={{
+                                color: "#2d3748",
+                                fontWeight: "500"
+                              }}>{user.user.phone}</span>
+                              <span>{user.count}ш</span>
+                              <span style={{
+                                color: "#48bb78",
+                                fontWeight: "600"
+                              }}>✅ Захиалсан</span>
+                            </li>
+                          ))
+                        : cartUser?.data?.data?.map((user) => (
+                            <li key={user.id} style={{
+                              padding: "12px",
+                              backgroundColor: "#f7fafc",
+                              borderRadius: "8px",
+                              boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center"
+                            }}>
+                              <span style={{
+                                color: "#2d3748",
+                                fontWeight: "500"
+                              }}>{user.user.phone}</span>
+                              <span style={{
+                                color: "#2d3748",
+                                fontWeight: "500"
+                              }}>{user.count}ш</span>
+                              <span style={{
+                                color: "#ecc94b",
+                                fontWeight: "600"
+                              }}>🛒 Сагсанд</span>
+                            </li>
+                          ))}
+                    </ul>
+                  </div>
+
+                  <button style={{
+                    marginTop: "16px",
+                    width: "100%",
+                    backgroundColor: "#f56565",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    transition: "background-color 0.2s ease",
+                    cursor: "pointer"
+                  }} onClick={() => setListShow(false)}>
+                    Хаах
+                  </button>
+                </div>
+              </div>
+            )}
+
+
+
           </div>
         )}
 
@@ -197,6 +363,7 @@ const makeAdmin = async (userId) => {
             </div>
           </div>
         )}
+
         </div>
         
       </div>

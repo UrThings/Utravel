@@ -10,7 +10,7 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-import {logins, signups, getUser, makeAdmin, removeUsers, checkUser} from '../service/user.service'
+import {logins, signups, getUser, makeAdmin, removeUsers, checkUser, usersWithTravelInCart, usersWithBookedTravel} from '../service/user.service'
 
 export const signup = async (req: Request, res: Response, next: NextFunction)  => {
     
@@ -93,6 +93,37 @@ export const login = async (req: Request, res: Response,  next: NextFunction) =>
 
 
 
+export const findUserFromCart = async (req: Request, res:Response, next: NextFunction) => {
+    try{
+        const {travelId} = req.params;
+        const user = await usersWithTravelInCart(travelId) 
+        res.json({data: user})
+    }
+    catch(error)
+    {
+        res.status(500).json({message: 'findUserFromCart error'})
+    }
+}
+
+
+
+
+
+export const findUserFromBooked = async (req: Request, res:Response, next: NextFunction) => {
+    try{
+        const {travelId} = req.params;
+        const user = await usersWithBookedTravel(travelId) 
+        res.json({data: user})
+    }
+    catch(error)
+    {
+        res.status(500).json({message: 'findUserFromCart error'})
+    }
+}
+
+
+
+
 
 
 
@@ -136,5 +167,7 @@ export const removeUser = async (req: Request, res: Response, next: NextFunction
         next(error)
     }
 }
+
+
 
 

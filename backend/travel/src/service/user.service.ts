@@ -88,3 +88,33 @@ export const getUser = async () => {
     const users = await prisma.user.findMany()
     return users;
 }
+
+export const usersWithTravelInCart = async (travelId: string) =>{
+    const users = await prisma.cartTravel.findMany({
+        where: {
+          travelId: travelId, 
+        },
+        include: {
+          user: true, 
+        },
+      });
+      return users
+      
+}
+
+
+
+
+export const usersWithBookedTravel = async (travelId: string) =>{
+    const users = await prisma.bookedTravel.findMany({
+        where: {
+          travelId: travelId, 
+        },
+        include: {
+          user: true, 
+        },
+      });
+      console.log(users);
+      return users
+      
+}
