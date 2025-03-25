@@ -5,7 +5,7 @@ export default function FilterHtml({filters, handleFilterChange}) {
                     className="left"
                     style={{
                         position: "sticky",
-                        top: "80px",
+                        top: "150px",
                         background: "white",
                         boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                         borderRadius: "10px",
